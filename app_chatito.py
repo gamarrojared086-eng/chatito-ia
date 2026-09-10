@@ -11,10 +11,8 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 15
 
-    # Lista donde se mostrarán las burbujas de chat
     chat_list = ft.ListView(expand=True, spacing=12, auto_scroll=True)
 
-    # Campo de texto para escribir
     user_input = ft.TextField(
         hint_text="Escribe o habla con Chatito...",
         expand=True,
@@ -24,13 +22,12 @@ def main(page: ft.Page):
     )
 
     def agregar_mensaje(texto, es_usuario):
-        # Crear burbujas de chat estilo app moderna
         burbuja = ft.Container(
             content=ft.Text(texto, color=ft.Colors.WHITE if es_usuario else ft.Colors.BLACK),
             bgcolor=ft.Colors.BLUE_700 if es_usuario else ft.Colors.GREY_300,
             padding=12,
             border_radius=15,
-            alignment=ft.alignment.center_right if es_usuario else ft.alignment.center_left,
+            alignment=ft.alignment.center,
             margin=ft.margin.only(left=50 if es_usuario else 0, right=0 if es_usuario else 50)
         )
         chat_list.controls.append(burbuja)
@@ -45,7 +42,6 @@ def main(page: ft.Page):
         user_input.value = ""
         page.update()
 
-        # Petición a la API de Gemini
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODELO}:generateContent?key={API_KEY}"
         headers = {"Content-Type": "application/json"}
         data = {"contents": [{"parts": [{"text": texto_usuario}]}]}
@@ -64,10 +60,8 @@ def main(page: ft.Page):
         page.update()
 
     def abrir_micrifono(e):
-        # Aquí conectaremos la función de voz próximamente
         agregar_mensaje("🎤 Micrófono activado: Función de voz en desarrollo", es_usuario=False)
 
-    # Botones de la barra inferior (Micrófono y Enviar)
     mic_button = ft.IconButton(
         icon=ft.Icons.MIC_ROUNDED,
         icon_color=ft.Colors.WHITE,
@@ -82,7 +76,6 @@ def main(page: ft.Page):
         on_click=enviar_mensaje
     )
 
-    # Fila que junta el input de texto, el botón de voz y el de enviar
     input_row = ft.Row([user_input, mic_button, send_button], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
 
     page.add(chat_list, input_row)
